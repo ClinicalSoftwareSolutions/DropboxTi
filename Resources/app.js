@@ -24,67 +24,130 @@ var Dropbox = require('com.clinsoftsol.dropboxti');
 var DBClient = Dropbox.createClient({
 									appKey: myAppKey,
                                     appSecret: myAppSecret,
-                                    appRoot: Dropbox.DB_ROOT_APP,
+                                    appRoot: Dropbox.DB_ROOT_FULL,
+                                    onerror: function(e) {dbclientError(e);},
                                     });
 
-var win = Ti.UI.createWindow({backgroundColor: 'white', layout: 'vertical'});
+var containingWin = Ti.UI.createWindow({});
+var win = Ti.UI.createWindow({title: 'Dropbox Example App', backgroundColor: 'white', layout: 'vertical'});
+var nv = Ti.UI.iPhone.createNavigationGroup({window: win});
+containingWin.add(nv);
 
+var data = [];
+data.push({title: 'Link', func: 'link'});
+data.push({title: 'Unlink', func: 'unlink'});
+data.push({title: 'Get Account Info', func: 'acinfo'});
+data.push({title: 'Load Metadata from path', func: 'loadmeta'});
+
+var tv = Ti.UI.createTableView({
+	data: data,
+//	height: '50%',
+});
+
+tv.addEventListener('click',function(e){
+	switch(e.row.func) {
+		case 'link':
+			if(DBClient.isLinked) {
+				Ti.API.info("Dropbox already linked. Userids: " + DBClient.userIds());
+				alert("Already linked");
+			}
+			else {
+				DBClient.link();
+			}
+		break;
+		case 'unlink':
+			DBClient.unlink();
+		break;
+		case 'acinfo':
+			DBClient.loadAccountInfo();
+		break;
+		case 'loadmeta':
+  			var dialog = Ti.UI.createAlertDialog({
+    			title: 'Enter path',
+    			style: Ti.UI.iPhone.AlertDialogStyle.PLAIN_TEXT_INPUT,
+    			cancel: 1,
+    			buttonNames: ['OK','Cancel']
+  			});
+  			dialog.addEventListener('click', function(e){
+    			if (e.index !== e.source.cancel) {
+    				DBClient.loadMetadata({path: e.text});
+    			}
+  			});
+  			dialog.show();
+  			break;
+	}
+});
+win.add(tv);
+
+// Add a scroll view for output
+// var sv = Ti.UI.createScrollView({layout: 'vertical', heigth: '50%'});
+// self.add(sv);
+
+function log(_msg) {
+	Ti.API.info(_msg);		
+}
 /*
  * Linking user
  */
-var linkBut = Ti.UI.createButton({title: 'Link'});
-win.add(linkBut);
-linkBut.addEventListener('click', function(e){
-	if(DBClient.isLinked) {
-		Ti.API.info("Dropbox already linked. Userids: " + DBClient.userIds());
-		alert("Already linked");
-	}
-	else {
-		DBClient.link();
-	}
-});
-
 DBClient.addEventListener('linked', function(e){
-	Ti.API.info("Dropbox linked now. Userids: " + e.userids);
-});
-
-/*
- * Un-linking accounts
- */
-var unlinkBut = Ti.UI.createButton({title: 'Unlink'});
-win.add(unlinkBut);
-unlinkBut.addEventListener('click', function(e){
-	DBClient.unlink();
+	log("Dropbox linked now. Userids: " + e.userids);
 });
 
 /*
  * Get account information
  */
-var acInfoBut = Ti.UI.createButton({title: 'Get Account Info'});
-win.add(acInfoBut);
-
-acInfoBut.addEventListener('click', function(e){
-	DBClient.loadAccountInfo();
-});
-
 DBClient.addEventListener('loadedAccountInfo', function(e){
-	Ti.API.info('country = '+e.country);
-	Ti.API.info('displayName = '+e.displayName);
-	Ti.API.info('userId = '+e.userId);
-	Ti.API.info('referralLink = '+e.referralLink);
-	Ti.API.info('Quota.normalBytes = '+e.quota.normalBytes);
-	Ti.API.info('Quota.sharedBytes = '+e.quota.sharedBytes);
-	Ti.API.info('Quota.totalConsumedBytes = '+e.quota.totalConsumedBytes);
-	Ti.API.info('Quota.totalBytes = '+e.quota.totalBytes);
+	require('var_dump').display(e);
+
+	log("*** ACCOUNT INFO ***");
+	log('country = '+e.country);
+	log('displayName = '+e.displayName);
+	log('userId = '+e.userId);
+	log('referralLink = '+e.referralLink);
+	log('Quota.normalBytes = '+e.quota.normalBytes);
+	log('Quota.sharedBytes = '+e.quota.sharedBytes);
+	log('Quota.totalConsumedBytes = '+e.quota.totalConsumedBytes);
+	log('Quota.totalBytes = '+e.quota.totalBytes);	
 });
 
 DBClient.addEventListener('loadAccountError', function(e){
-	Ti.API.info('Load account error = '+e.error);	
+	log('Load account error = '+e.error);	
 });
+
+/*
+ * Metadata load
+ */
+DBClient.addEventListener('loadedMetadata',function(e){
+	require('var_dump').display(e);
+	
+	if(e.datatype==='dir') {
+		log("Metadata has "+e.contents.length+" items.");
+		nv.open( require('fileui').createFileListWin(e.contents) );
+	}
+	
+	if(e.datatype==='file') {
+		printMetadataInfo(e.data);	
+	}
+});
+
+function dbclientError(e) {
+	log("DB Client error");
+	log("Error subtype = "+e.subtype);	
+}
+
+function printMetadataInfo(_data) {
+	log("Metadata for "+_data.filename);
+	log(" isDirectory: "+((_data.isDirectory)?'Yes':'No'))
+	log(" hasThumbnail:"+((_data.thumbnailExists)?'Yes':'No'));
+}
 
 /*
  * Open the window
  */
-win.open();
+containingWin.open();
+
+Ti.App.addEventListener('app:PopMenu_filelist',function(e){
+	
+});
 
 })();

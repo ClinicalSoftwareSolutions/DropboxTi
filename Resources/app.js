@@ -12,7 +12,7 @@ Member									Location			Notes
 -(void)loadDelta:(id)cursor;			app.js				Two methods chunked and loadall
 -(void)loadThumbnail:(id)args;			viewdetail.js
 -(void)cancelThumbnailLoad:(id)args;	NYI
--(void)loadRevisionsForFile:(id)args;
+-(void)loadRevisionsForFile:(id)args;	app.js / fileui.js
 -(void)restoreFile:(id)args;
 -(void)loadFile:(id)args;
 -(void)cancelFileLoad:(NSString*)path;
@@ -69,6 +69,7 @@ data.push({title: 'Load Metadata from path', func: 'loadmeta'});
 data.push({title: 'Load Delta chunked', func: 'delta'});
 data.push({title: 'Load Delta using loadall', func: 'deltaall'});
 data.push({title: 'Create Folder', func: 'mkdir'});
+data.push({title: 'Search', func: 'search'});
 
 var tv = Ti.UI.createTableView({
 	data: data,
@@ -110,8 +111,7 @@ tv.addEventListener('click',function(e){
 		case 'delta':
 		case 'deltaall':
   			var dialog = Ti.UI.createAlertDialog({
-    			title: 'Enter delta string',
-    			style: Ti.UI.iPhone.AlertDialogStyle.PLAIN_TEXT_INPUT,
+    			title: 'Enter delta string', style: Ti.UI.iPhone.AlertDialogStyle.PLAIN_TEXT_INPUT,
     			cancel: 1, buttonNames: ['OK','Cancel']
   			});
   			dialog.addEventListener('click', function(e){
@@ -122,6 +122,20 @@ tv.addEventListener('click',function(e){
     			}
   			});
   			dialog.show();
+		break;
+		case 'search':
+  			var dialog = Ti.UI.createAlertDialog({
+    			title: 'Enter search string', style: Ti.UI.iPhone.AlertDialogStyle.PLAIN_TEXT_INPUT,
+    			cancel: 1, buttonNames: ['OK','Cancel']
+  			});
+  			dialog.addEventListener('click', function(e){
+    			if (e.index !== e.source.cancel) {
+    				// I don't know why, but it seem account info needs to be called before load delta
+    				DBClient.loadAccountInfo();
+    				DBClient.loadDelta({cursor: e.text, loadall: (func=='deltaall')?true:false});
+    			}
+  			});
+  			dialog.show();		
 		break;
 	}
 });

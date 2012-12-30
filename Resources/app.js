@@ -130,9 +130,8 @@ tv.addEventListener('click',function(e){
   			});
   			dialog.addEventListener('click', function(e){
     			if (e.index !== e.source.cancel) {
-    				// I don't know why, but it seem account info needs to be called before load delta
-    				DBClient.loadAccountInfo();
-    				DBClient.loadDelta({cursor: e.text, loadall: (func=='deltaall')?true:false});
+    				// For the demo app we just search root
+    				DBClient.searchPath({path:"/", keyword: e.text,});
     			}
   			});
   			dialog.show();		
@@ -231,6 +230,10 @@ DBClient.addEventListener('loadedRevisions',function(e){
 	}
 });
 
+DBClient.addEventListener('loadedSearchResults',function(e){
+
+});
+
 function dbclientError(error,subtype,code) {
 	log("DB Client error: "+error);
 	log("Error subtype = "+subtype);
@@ -242,11 +245,6 @@ function printMetadataInfo(_data) {
 	log(" isDirectory: "+((_data.isDirectory)?'Yes':'No'))
 	log(" hasThumbnail:"+((_data.thumbnailExists)?'Yes':'No'));
 }
-
-/*
- * Open the window
- */
-containingWin.open();
 
 Ti.App.addEventListener('app:PopMenu_filelist',function(e){
 	switch(e.func) {
@@ -271,5 +269,10 @@ Ti.App.addEventListener('app:PopMenu_filelist',function(e){
 		break;
 	}
 });
+
+/*
+ * Open the window
+ */
+containingWin.open();
 
 })();

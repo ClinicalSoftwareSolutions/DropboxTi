@@ -231,7 +231,13 @@ DBClient.addEventListener('loadedRevisions',function(e){
 });
 
 DBClient.addEventListener('loadedSearchResults',function(e){
-
+	log("Search returned "+e.results.length+" results");
+	if(e.results.length>0) {
+		var i;
+		for(i=0;i<e.results.length;i++) {
+			log( ((e.results[i].isDirectory)?"[D] ":"[F] " ) + e.results[i].path);
+		}
+	}
 });
 
 function dbclientError(error,subtype,code) {

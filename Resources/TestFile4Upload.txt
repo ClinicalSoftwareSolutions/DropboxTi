@@ -1,0 +1,1 @@
+This is a text file stored in Resources that can be used to test file upload

@@ -24,7 +24,7 @@ Member									Location			Notes
 -(void)uploadFile:(id)args;
 -(void)loadSharableLink:(id)args;		app.js / fileui.js
 -(void)loadStreamableURL:(id)args;		app.js / fileui.js
--(void)searchPath:(id)args;
+-(void)searchPath:(id)args;				app.js
  
  */
 

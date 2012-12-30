@@ -208,7 +208,13 @@ DBClient.addEventListener('loadedStreamableURL',function(e){
 });
 
 DBClient.addEventListener('loadedRevisions',function(e){
-	log("Revisions for path: "+e.path+" number "+e.revisions.length);
+	log("There are "+e.revisions.length+" revisions for path: "+e.path);
+	var i;
+	for(i=0;i<e.revisions.length;i++) {
+		log(" - Rev: "+e.revisions[i].rev);
+		log(" - humanReadableSize: "+e.revisions[i].humanReadableSize)
+		log(" - Last mod date: "+ Date( e.revisions[i].lastModifiedDate ).toString());
+	}
 });
 
 function dbclientError(error,subtype,code) {

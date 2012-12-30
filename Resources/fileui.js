@@ -3,9 +3,12 @@
  */
 
 var m_popmenu = require('popmenu');
-m_popmenu.addAction('Show thumbnail','thumb');
 m_popmenu.addAction('Download File','dl');
-m_popmenu.addAction('Create Folder','mkdir');
+m_popmenu.addAction('Show detail view','detail');
+m_popmenu.addAction('Get copy ref','copyref');
+m_popmenu.addAction('Get Share Link','share');
+m_popmenu.addAction('Get streamable Link','stream');
+m_popmenu.addAction('Load revisions','revs');
 //m_popmenu.addAction('','');
 m_popmenu.addAction('Cancel','cancel');
 
@@ -19,6 +22,8 @@ exports.createFileListWin = function(_metadata) {
 			hasDetail: (_metadata[i].isDirectory)?true:false,
 			hasChild: (_metadata[i].isDirectory)?false:true,
 			leftImage: '/DBIcons16/'+_metadata[i].icon+'.gif',
+			path: _metadata[i].path,
+			fn: _metadata[i].filename,
 		});
 		tr.add(lbl);
 		data.push(tr);
@@ -30,7 +35,13 @@ exports.createFileListWin = function(_metadata) {
 	self.add(tv);
 	
 	tv.addEventListener('click', function(e){
-		var popmenu = m_popmenu.createPopupMenu("filelist");
+		var popmenu = m_popmenu.createPopupMenu({
+			name: "filelist",
+			data: {
+				path: e.row.path,
+				filename: e.row.fn,
+			}
+		});
 		popmenu.open();		
 	});
 	

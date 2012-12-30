@@ -14,14 +14,14 @@ Member									Location			Notes
 -(void)cancelThumbnailLoad:(id)args;	NYI
 -(void)loadRevisionsForFile:(id)args;	app.js / fileui.js
 -(void)restoreFile:(id)args;
--(void)loadFile:(id)args;
+-(void)loadFile:(id)args;				app.js / fileui.js
 -(void)cancelFileLoad:(NSString*)path;
 -(void)createFolder:(id)args;			app.js
--(void)deletePath:(id)args;
+-(void)deletePath:(id)args;				app.js
 -(void)copyPath:(id)args;
 -(void)createCopyRef:(id)args;			app.js / fileui.js
 -(void)movePath:(id)args;
--(void)uploadFile:(id)args;
+-(void)uploadFile:(id)args;				app.js
 -(void)loadSharableLink:(id)args;		app.js / fileui.js
 -(void)loadStreamableURL:(id)args;		app.js / fileui.js
 -(void)searchPath:(id)args;				app.js
@@ -53,7 +53,14 @@ var DBClient = Dropbox.createClient({
                                     appRoot: Dropbox.DB_ROOT_FULL,
                                     onerror: function(e) {dbclientError(e.error,e.subtype,e.code);},
                                     });
-                                    
+
+if(DBClient.isLinked) {                                    
+	// I don't know why, but it seem account info needs to be called before
+	// any of the other network operations work.
+	// So if linked call this straight away
+    DBClient.loadAccountInfo();
+}
+
 require('viewdetail').setDropboxClient(DBClient);
 
 var containingWin = Ti.UI.createWindow({});
@@ -69,7 +76,9 @@ data.push({title: 'Load Metadata from path', func: 'loadmeta'});
 data.push({title: 'Load Delta chunked', func: 'delta'});
 data.push({title: 'Load Delta using loadall', func: 'deltaall'});
 data.push({title: 'Create Folder', func: 'mkdir'});
+data.push({title: 'Delete Path', func: 'rm'});
 data.push({title: 'Search', func: 'search'});
+data.push({title: 'Upload test file', func: 'upload'});
 
 var tv = Ti.UI.createTableView({
 	data: data,
@@ -107,6 +116,29 @@ tv.addEventListener('click',function(e){
   			dialog.show();
   		break;
   		case 'mkdir':
+  			var dialog = Ti.UI.createAlertDialog({
+    			title: 'Enter path to create', style: Ti.UI.iPhone.AlertDialogStyle.PLAIN_TEXT_INPUT,
+    			cancel: 1, buttonNames: ['OK','Cancel']
+  			});
+  			dialog.addEventListener('click', function(e){
+    			if (e.index !== e.source.cancel) {
+    				DBClient.createFolder({path: e.text});
+    			}
+  			});
+  			dialog.show();		
+  		break;
+  		case 'rm':
+  			var dialog = Ti.UI.createAlertDialog({
+    			title: 'Enter path (can be dir or file) to delete. USE CAREFULLY',
+    			style: Ti.UI.iPhone.AlertDialogStyle.PLAIN_TEXT_INPUT,
+    			cancel: 1, buttonNames: ['OK','Cancel']
+  			});
+  			dialog.addEventListener('click', function(e){
+    			if (e.index !== e.source.cancel) {
+    				DBClient.deletePath({path: e.text});
+    			}
+  			});
+  			dialog.show();		
   		break;
 		case 'delta':
 		case 'deltaall':
@@ -116,8 +148,6 @@ tv.addEventListener('click',function(e){
   			});
   			dialog.addEventListener('click', function(e){
     			if (e.index !== e.source.cancel) {
-    				// I don't know why, but it seem account info needs to be called before load delta
-    				DBClient.loadAccountInfo();
     				DBClient.loadDelta({cursor: e.text, loadall: (func=='deltaall')?true:false});
     			}
   			});
@@ -135,6 +165,14 @@ tv.addEventListener('click',function(e){
     			}
   			});
   			dialog.show();		
+		break;
+		case 'upload':
+			file = Ti.Filesystem.getFile(Ti.Filesystem.resourcesDirectory, "/TestFile4Upload.png");
+			DBClient.uploadFile({
+				path: '/TestFile4Upload.png',
+				file: file,
+				//parentRev: ''
+			});
 		break;
 	}
 });
@@ -208,6 +246,23 @@ DBClient.addEventListener('loadedDeltaEntries',function(e){
 	}
 });
 
+DBClient.addEventListener('loadProgress',function(e){
+	log("Load progress for: "+e.path+". Progress: "+e.progress);
+});
+
+DBClient.addEventListener('loadedFile',function(e){
+	log("File loaded into: "+e.path);
+	log(" Content type: "+e.contentType);
+});
+
+DBClient.addEventListener('uploadProgress',function(e){	
+	log("Load progress for: " + e.path + " to " + e.destPath + ". Progress: "+e.progress);
+});
+
+DBClient.addEventListener('uploadedFile',function(e){
+	log("Uploaded file: "+e.path+" from srcPath "+e.srcPath);
+});
+
 DBClient.addEventListener('createdCopyRef',function(e){
 	log("Copy reference generated: "+e.copyRef);
 });
@@ -240,6 +295,14 @@ DBClient.addEventListener('loadedSearchResults',function(e){
 	}
 });
 
+DBClient.addEventListener('createdFolder',function(e){
+	log("Created folder "+e.path+" Root: "+e.root+" Rev: "+e.rev);
+});
+
+DBClient.addEventListener('deletedPath',function(e){
+	log("Deleted path "+e.path);
+});
+
 function dbclientError(error,subtype,code) {
 	log("DB Client error: "+error);
 	log("Error subtype = "+subtype);
@@ -255,6 +318,7 @@ function printMetadataInfo(_data) {
 Ti.App.addEventListener('app:PopMenu_filelist',function(e){
 	switch(e.func) {
 		case 'dl':
+			DBClient.loadFile({path: e.data.path});
 		break;
 		case 'detail':
 			log("Opening details window with path: "+e.data.path);

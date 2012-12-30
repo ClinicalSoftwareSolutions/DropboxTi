@@ -196,15 +196,19 @@ DBClient.addEventListener('loadedDeltaEntries',function(e){
 });
 
 DBClient.addEventListener('createdCopyRef',function(e){
+	log("Copy reference generated: "+e.copyRef);
 });
 
 DBClient.addEventListener('loadedSharableLink',function(e){
+	log("Shareable link for "+e.path+" is "+e.url);
 });
 
 DBClient.addEventListener('loadedStreamableURL',function(e){
+	log("Streamable link for "+e.path+" is "+e.url);
 });
 
 DBClient.addEventListener('loadedRevisions',function(e){
+	log("Revisions for path: "+e.path+" number "+e.revisions.length);
 });
 
 function dbclientError(error,subtype,code) {

@@ -195,6 +195,18 @@ DBClient.addEventListener('loadedDeltaEntries',function(e){
 	}
 });
 
+DBClient.addEventListener('createdCopyRef',function(e){
+});
+
+DBClient.addEventListener('loadedSharableLink',function(e){
+});
+
+DBClient.addEventListener('loadedStreamableURL',function(e){
+});
+
+DBClient.addEventListener('loadedRevisions',function(e){
+});
+
 function dbclientError(error,subtype,code) {
 	log("DB Client error: "+error);
 	log("Error subtype = "+subtype);

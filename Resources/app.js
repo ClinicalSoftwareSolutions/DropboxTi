@@ -13,14 +13,14 @@ Member									Location			Notes
 -(void)loadThumbnail:(id)args;			viewdetail.js
 -(void)cancelThumbnailLoad:(id)args;	NYI
 -(void)loadRevisionsForFile:(id)args;	app.js / fileui.js
--(void)restoreFile:(id)args;
+-(void)restoreFile:(id)args;			app.js / fileui.js
 -(void)loadFile:(id)args;				app.js / fileui.js
 -(void)cancelFileLoad:(NSString*)path;
 -(void)createFolder:(id)args;			app.js
 -(void)deletePath:(id)args;				app.js
--(void)copyPath:(id)args;
+-(void)copyPath:(id)args;				app.js / fileui.js
 -(void)createCopyRef:(id)args;			app.js / fileui.js
--(void)movePath:(id)args;
+-(void)movePath:(id)args;				app.js / fileui.js
 -(void)uploadFile:(id)args;				app.js
 -(void)loadSharableLink:(id)args;		app.js / fileui.js
 -(void)loadStreamableURL:(id)args;		app.js / fileui.js
@@ -79,6 +79,7 @@ data.push({title: 'Create Folder', func: 'mkdir'});
 data.push({title: 'Delete Path', func: 'rm'});
 data.push({title: 'Search', func: 'search'});
 data.push({title: 'Upload test file', func: 'upload'});
+data.push({title: 'Upload known non-existent', func: 'uploadnon'});
 
 var tv = Ti.UI.createTableView({
 	data: data,
@@ -167,11 +168,18 @@ tv.addEventListener('click',function(e){
   			dialog.show();		
 		break;
 		case 'upload':
-			file = Ti.Filesystem.getFile(Ti.Filesystem.resourcesDirectory, "/TestFile4Upload.png");
+			file = Ti.Filesystem.getFile(Ti.Filesystem.resourcesDirectory, "/Default.png");
 			DBClient.uploadFile({
-				path: '/TestFile4Upload.png',
+				path: '/DefaultFromDropboxTi.png',
 				file: file,
 				//parentRev: ''
+			});
+		break;
+		case 'uploadnon':
+			file = Ti.Filesystem.getFile(Ti.Filesystem.resourcesDirectory, "/jfhdfjfdhfdhkfdhkfd.r5tg");
+			DBClient.uploadFile({
+				path: '/filedoesnot.exist',
+				file: file
 			});
 		break;
 	}
@@ -279,10 +287,14 @@ DBClient.addEventListener('loadedRevisions',function(e){
 	log("There are "+e.revisions.length+" revisions for path: "+e.path);
 	var i;
 	for(i=0;i<e.revisions.length;i++) {
-		log(" - Rev: "+e.revisions[i].rev);
-		log(" - humanReadableSize: "+e.revisions[i].humanReadableSize)
-		log(" - Last mod date: "+ Date( e.revisions[i].lastModifiedDate ).toString());
+		log(" - Rev: "+e.revisions[i].rev + "\t" +
+		" - humanReadableSize: "+e.revisions[i].humanReadableSize + "\t" +
+		" - Last mod date: "+ Date( e.revisions[i].lastModifiedDate ).toString());
 	}
+});
+
+DBClient.addEventListener('restoredFile',function(e){
+	log("Restored file "+e.path+" to rev: "+e.rev);
 });
 
 DBClient.addEventListener('loadedSearchResults',function(e){
@@ -336,6 +348,54 @@ Ti.App.addEventListener('app:PopMenu_filelist',function(e){
 		break;
 		case 'revs':
 			DBClient.loadRevisionsForFile({path: e.data.path, limit: 50});
+		break;
+		case 'restore':
+			var path = e.data.path;
+			DBClient.loadRevisionsForFile({path: path, limit: 50});
+			
+  			var dialog = Ti.UI.createAlertDialog({
+    			title: 'The revisions for the file have been output to the console. Input a revision.',
+    			style: Ti.UI.iPhone.AlertDialogStyle.PLAIN_TEXT_INPUT,
+    			cancel: 1, buttonNames: ['OK','Cancel']
+  			});
+  			dialog.addEventListener('click', function(e){
+    			if (e.index !== e.source.cancel) {
+    				DBClient.restoreFile({path: path, rev: e.text});
+    			}
+  			});
+  			dialog.show();
+		break;
+		case 'copy':
+			var path = e.data.path;
+			DBClient.loadRevisionsForFile({path: path, limit: 50});
+			
+  			var dialog = Ti.UI.createAlertDialog({
+    			title: 'Enter path to COPY to',
+    			style: Ti.UI.iPhone.AlertDialogStyle.PLAIN_TEXT_INPUT,
+    			cancel: 1, buttonNames: ['OK','Cancel']
+  			});
+  			dialog.addEventListener('click', function(e){
+    			if (e.index !== e.source.cancel) {
+    				DBClient.restoreFile({srcPath: path, destPath: e.text});
+    			}
+  			});
+  			dialog.show();
+		break;
+		case 'move':
+			var path = e.data.path;
+			DBClient.loadRevisionsForFile({path: path, limit: 50});
+			
+  			var dialog = Ti.UI.createAlertDialog({
+    			title: 'Enter path to MOVE to',
+    			style: Ti.UI.iPhone.AlertDialogStyle.PLAIN_TEXT_INPUT,
+    			cancel: 1, buttonNames: ['OK','Cancel']
+  			});
+  			dialog.addEventListener('click', function(e){
+    			if (e.index !== e.source.cancel) {
+    				DBClient.restoreFile({srcPath: path, destPath: e.text});
+    			}
+  			});
+  			dialog.show();
 		break;
 	}
 });

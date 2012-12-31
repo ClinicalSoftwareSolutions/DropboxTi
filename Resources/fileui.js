@@ -9,7 +9,9 @@ m_popmenu.addAction('Get copy ref','copyref');
 m_popmenu.addAction('Get Share Link','share');
 m_popmenu.addAction('Get streamable Link','stream');
 m_popmenu.addAction('Load revisions','revs');
-//m_popmenu.addAction('','');
+m_popmenu.addAction('Restore file','restore');
+m_popmenu.addAction('Copy file','copy');
+m_popmenu.addAction('Move file','move');
 m_popmenu.addAction('Cancel','cancel');
 
 exports.createFileListWin = function(_metadata) {

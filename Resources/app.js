@@ -227,12 +227,12 @@ DBClient.addEventListener('loadAccountError', function(e){
 DBClient.addEventListener('loadedMetadata',function(e){
 	require('var_dump').display(e);
 	
-	if(e.datatype==='dir') {
+	if(e.isDirectory) {
 		log("Metadata has "+e.contents.length+" items.");
 		nv.open( require('fileui').createFileListWin(e.contents) );
 	}
 	
-	if(e.datatype==='file') {
+	if(!e.isDirectory) {
 		printMetadataInfo(e.data);	
 	}
 });

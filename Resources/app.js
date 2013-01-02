@@ -11,7 +11,7 @@ Member									Location			Notes
 -(void)loadMetadata:(id)args;			app.js
 -(void)loadDelta:(id)cursor;			app.js				Two methods chunked and loadall
 -(void)loadThumbnail:(id)args;			viewdetail.js
--(void)cancelThumbnailLoad:(id)args;	NYI
+-(void)cancelThumbnailLoad:(id)args;	viewdetail.js
 -(void)loadRevisionsForFile:(id)args;	app.js / fileui.js
 -(void)restoreFile:(id)args;			app.js / fileui.js
 -(void)loadFile:(id)args;				app.js / fileui.js

@@ -302,6 +302,14 @@ DBClient.addEventListener('loadedStreamableURL',function(e){
 	log("Streamable link for "+e.path+" is "+e.url, true);
 });
 
+DBClient.addEventListener('copiedPath', function(e){
+	log("Copied "+e.srcPath+" to "+e.path, true);	
+});
+
+DBClient.addEventListener('movedPath', function(e){
+	log("Moved "+e.srcPath+" to "+e.path, true);	
+});
+
 DBClient.addEventListener('loadedRevisions',function(e){
 	log("There are "+e.revisions.length+" revisions for path: "+e.path);
 	var i;

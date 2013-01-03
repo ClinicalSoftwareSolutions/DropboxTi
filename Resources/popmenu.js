@@ -26,7 +26,7 @@ exports.createPopupMenu = function(_args) {
 	
 	// Make a cancel button on the bottom
 	var cancelButton = Ti.UI.createButton({title: 'Cancel', height: '44dp', bottom: 0});
-		self.add(cancelButton);
+	subView.add(cancelButton);
 	cancelButton.addEventListener('click',function(e){
 		m_mainWin.close();
 	});

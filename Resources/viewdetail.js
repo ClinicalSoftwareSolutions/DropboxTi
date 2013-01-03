@@ -15,7 +15,7 @@ exports.createDetailsWin = function(_path) {
 	var thumbview = Ti.UI.createImageView({top:10, left:10, height:thumbsize.height, width:thumbsize.width});
 	self.add(thumbview);
 	
-	// Create a cancel that overlays the thumb imageview
+	// Create and cancel that overlays the thumb imageview
 	var cancelBut = Ti.UI.createButton({title: 'Cancel\nThumb',
 		top:10, left:10, height:thumbsize.height, width:thumbsize.width});
 	self.add(cancelBut);

@@ -30,7 +30,7 @@ Member									Location			Notes
 
 //bootstrap and check dependencies
 if (Ti.version < 2.0 ) {
-	alert('Sorry - this application template requires Titanium Mobile SDK 2.0 or later');	  	
+	alert('Sorry - this application requires Titanium Mobile SDK 2.0 or later');	  	
 }
 
 // This is a single context application with multiple windows in a stack
@@ -54,6 +54,9 @@ var DBClient = Dropbox.createClient({
                                     onerror: function(e) {dbclientError(e.error,e.subtype,e.code);},
                                     });
 
+// View detail needs the client object
+require('viewdetail').setDropboxClient(DBClient);
+
 if(DBClient.isLinked) {                                    
 	// I don't know why, but it seem account info needs to be called before
 	// any of the other network operations work.
@@ -61,14 +64,14 @@ if(DBClient.isLinked) {
     DBClient.loadAccountInfo();
 }
 
-require('viewdetail').setDropboxClient(DBClient);
-
 var containingWin = Ti.UI.createWindow({});
 var win = Ti.UI.createWindow({title: 'Dropbox Example App', backgroundColor: 'white', layout: 'vertical'});
 var nv = Ti.UI.iPhone.createNavigationGroup({window: win});
 containingWin.add(nv);
 
 var data = [];
+
+data.push({title: 'Version: '+Ti.App.version, func: 'noop'});
 data.push({title: 'Link', func: 'link'});
 data.push({title: 'Unlink', func: 'unlink'});
 data.push({title: 'Get Account Info', func: 'acinfo'});
@@ -89,6 +92,8 @@ tv.addEventListener('click',function(e){
 	var func = e.row.func;
 	switch(func) {
 		case 'link':
+				DBClient.link();
+				break;
 			if(DBClient.isLinked) {
 				Ti.API.info("Dropbox already linked. Userids: " + DBClient.userIds());
 				alert("Already linked");
@@ -186,10 +191,6 @@ tv.addEventListener('click',function(e){
 });
 win.add(tv);
 
-// Add a scroll view for output
-// var sv = Ti.UI.createScrollView({layout: 'vertical', heigth: '50%'});
-// self.add(sv);
-
 function log(_msg) {
 	Ti.API.info(_msg);		
 }
@@ -198,6 +199,7 @@ function log(_msg) {
  */
 DBClient.addEventListener('linked', function(e){
 	log("Dropbox linked now. Userids: " + e.userids);
+	alert("Dropbox now linked");
 });
 
 /*
@@ -214,7 +216,7 @@ DBClient.addEventListener('loadedAccountInfo', function(e){
 	log('Quota.normalBytes = '+e.quota.normalBytes);
 	log('Quota.sharedBytes = '+e.quota.sharedBytes);
 	log('Quota.totalConsumedBytes = '+e.quota.totalConsumedBytes);
-	log('Quota.totalBytes = '+e.quota.totalBytes);	
+	log('Quota.totalBytes = '+e.quota.totalBytes);
 });
 
 DBClient.addEventListener('loadAccountError', function(e){

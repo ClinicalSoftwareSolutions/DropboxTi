@@ -191,7 +191,7 @@ win.add(tv);
 
 function log(_msg, _withAlert) {
 	Ti.API.info(_msg);
-	if(_withAlert===true) {
+	if(_withAlert==true) {
 		alert(_msg);
 	}
 }
@@ -282,7 +282,8 @@ DBClient.addEventListener('loadedFile',function(e){
 });
 
 DBClient.addEventListener('uploadProgress',function(e){	
-	log("Load progress for: " + e.path + " to " + e.destPath + ". Progress: "+e.progress);
+	log("Upload progress for: " + e.srcPath);
+	log(" to " + e.destPath + ". Progress: "+e.progress);
 });
 
 DBClient.addEventListener('uploadedFile',function(e){
@@ -385,7 +386,6 @@ Ti.App.addEventListener('app:PopMenu_filelist',function(e){
 		break;
 		case 'copy':
 			var path = e.data.path;
-			DBClient.loadRevisionsForFile({path: path, limit: 50});
 			
   			var dialog = Ti.UI.createAlertDialog({
     			title: 'Enter path to COPY to',
@@ -394,14 +394,13 @@ Ti.App.addEventListener('app:PopMenu_filelist',function(e){
   			});
   			dialog.addEventListener('click', function(e){
     			if (e.index !== e.source.cancel) {
-    				DBClient.restoreFile({srcPath: path, destPath: e.text});
+					DBClient.copyPath({srcPath: path, destPath: e.text});
     			}
   			});
   			dialog.show();
 		break;
 		case 'move':
 			var path = e.data.path;
-			DBClient.loadRevisionsForFile({path: path, limit: 50});
 			
   			var dialog = Ti.UI.createAlertDialog({
     			title: 'Enter path to MOVE to',
@@ -410,7 +409,7 @@ Ti.App.addEventListener('app:PopMenu_filelist',function(e){
   			});
   			dialog.addEventListener('click', function(e){
     			if (e.index !== e.source.cancel) {
-    				DBClient.restoreFile({srcPath: path, destPath: e.text});
+					DBClient.movePath({srcPath: path, destPath: e.text});
     			}
   			});
   			dialog.show();

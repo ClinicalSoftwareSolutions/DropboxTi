@@ -279,7 +279,7 @@ DBClient.addEventListener('loadProgress',function(e){
 });
 
 DBClient.addEventListener('loadedFile',function(e){
-	log("File loaded into: "+e.path);
+	log("File loaded into: "+e.path, true);
 	log(" Content type: "+e.contentType);
 });
 
@@ -290,6 +290,8 @@ DBClient.addEventListener('uploadProgress',function(e){
 
 DBClient.addEventListener('uploadedFile',function(e){
 	log("Uploaded file: "+e.path+" from srcPath "+e.srcPath, true);
+	DBClient.loadMetadata({path: require('fileui').path});
+	nv.close(m_fileuiwin);
 });
 
 DBClient.addEventListener('createdCopyRef',function(e){
@@ -306,12 +308,14 @@ DBClient.addEventListener('loadedStreamableURL',function(e){
 
 DBClient.addEventListener('copiedPath', function(e){
 	log("Copied "+e.srcPath+" to "+e.path, true);	
+	DBClient.loadMetadata({path: require('fileui').path});
+	nv.close(m_fileuiwin);
 });
 
 DBClient.addEventListener('movedPath', function(e){
 	log("Moved "+e.srcPath+" to "+e.path, true);
 	DBClient.loadMetadata({path: require('fileui').path});
-	m_fileuiwin.close();
+	nv.close(m_fileuiwin);
 });
 
 DBClient.addEventListener('loadedRevisions',function(e){

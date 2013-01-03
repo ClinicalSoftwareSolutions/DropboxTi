@@ -189,8 +189,11 @@ tv.addEventListener('click',function(e){
 });
 win.add(tv);
 
-function log(_msg) {
-	Ti.API.info(_msg);		
+function log(_msg, _withAlert) {
+	Ti.API.info(_msg);
+	if(_withAlert===true) {
+		alert(_msg);
+	}
 }
 /*
  * Linking user
@@ -283,19 +286,19 @@ DBClient.addEventListener('uploadProgress',function(e){
 });
 
 DBClient.addEventListener('uploadedFile',function(e){
-	log("Uploaded file: "+e.path+" from srcPath "+e.srcPath);
+	log("Uploaded file: "+e.path+" from srcPath "+e.srcPath, true);
 });
 
 DBClient.addEventListener('createdCopyRef',function(e){
-	log("Copy reference generated: "+e.copyRef);
+	log("Copy reference generated: "+e.copyRef, true);
 });
 
 DBClient.addEventListener('loadedSharableLink',function(e){
-	log("Shareable link for "+e.path+" is "+e.url);
+	log("Shareable link for "+e.path+" is "+e.url, true);
 });
 
 DBClient.addEventListener('loadedStreamableURL',function(e){
-	log("Streamable link for "+e.path+" is "+e.url);
+	log("Streamable link for "+e.path+" is "+e.url, true);
 });
 
 DBClient.addEventListener('loadedRevisions',function(e){
@@ -309,7 +312,7 @@ DBClient.addEventListener('loadedRevisions',function(e){
 });
 
 DBClient.addEventListener('restoredFile',function(e){
-	log("Restored file "+e.path+" to rev: "+e.rev);
+	log("Restored file "+e.path+" to rev: "+e.rev, true);
 });
 
 DBClient.addEventListener('loadedSearchResults',function(e){
@@ -323,11 +326,11 @@ DBClient.addEventListener('loadedSearchResults',function(e){
 });
 
 DBClient.addEventListener('createdFolder',function(e){
-	log("Created folder "+e.path+" Root: "+e.root+" Rev: "+e.rev);
+	log("Created folder "+e.path+" Root: "+e.root+" Rev: "+e.rev, true);
 });
 
 DBClient.addEventListener('deletedPath',function(e){
-	log("Deleted path "+e.path);
+	log("Deleted path "+e.path, true);
 });
 
 function dbclientError(error,subtype,code) {

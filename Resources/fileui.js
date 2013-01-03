@@ -2,6 +2,8 @@
  * @author Neville Dastur
  */
 
+exports.path = "";
+
 var m_popmenu = require('popmenu');
 m_popmenu.addAction('Download File','dl');
 m_popmenu.addAction('Show detail view','detail');
@@ -13,8 +15,9 @@ m_popmenu.addAction('Restore file','restore');
 m_popmenu.addAction('Copy file','copy');
 m_popmenu.addAction('Move file','move');
 
-exports.createFileListWin = function(_metadata) {
-	var self = Ti.UI.createWindow({});
+exports.createFileListWin = function(_metadata, _path) {
+	exports.path = _path;
+	var self = Ti.UI.createWindow({title: _path});
 	var i;
 	var data = [];
 	for(i=0;i<_metadata.length;i++) {

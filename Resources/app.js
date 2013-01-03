@@ -242,12 +242,14 @@ DBClient.addEventListener('loadAccountError', function(e){
 /*
  * Metadata load
  */
+var m_fileuiwin = null;
 DBClient.addEventListener('loadedMetadata',function(e){
 	require('var_dump').display(e);
 	
 	if(e.isDirectory) {
 		log("Metadata has "+e.contents.length+" items.");
-		nv.open( require('fileui').createFileListWin(e.contents) );
+		m_fileuiwin=require('fileui').createFileListWin(e.contents, e.path);
+		nv.open( m_fileuiwin );
 	}
 	
 	if(!e.isDirectory) {
@@ -307,7 +309,9 @@ DBClient.addEventListener('copiedPath', function(e){
 });
 
 DBClient.addEventListener('movedPath', function(e){
-	log("Moved "+e.srcPath+" to "+e.path, true);	
+	log("Moved "+e.srcPath+" to "+e.path, true);
+	DBClient.loadMetadata({path: require('fileui').path});
+	m_fileuiwin.close();
 });
 
 DBClient.addEventListener('loadedRevisions',function(e){

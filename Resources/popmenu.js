@@ -21,9 +21,16 @@ exports.createPopupMenu = function(_args) {
 		top:'0dp', heigth:'44dp', width:Ti.UI.FILL,
 		backgroundColor:'#f5f5f5'});
 	subView.add(headLbl);
-	var tv = Ti.UI.createTableView({top:'44dp', minRowHeight:'44dp', data: m_actions});
+	var tv = Ti.UI.createTableView({top:'44dp', minRowHeight:'44dp', bottom: '44dp', data: m_actions});
 	subView.add(tv);
 	
+	// Make a cancel button on the bottom
+	var cancelButton = Ti.UI.createButton({title: 'Cancel', height: '44dp', bottom: 0});
+		self.add(cancelButton);
+	cancelButton.addEventListener('click',function(e){
+		m_mainWin.close();
+	});
+
 	tv.addEventListener('click',function(e){
 		if(e.row.func!=="cancel") {
 			Ti.App.fireEvent('app:PopMenu_'+_args.name, {

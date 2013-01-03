@@ -12,7 +12,6 @@ m_popmenu.addAction('Load revisions','revs');
 m_popmenu.addAction('Restore file','restore');
 m_popmenu.addAction('Copy file','copy');
 m_popmenu.addAction('Move file','move');
-m_popmenu.addAction('Cancel','cancel');
 
 exports.createFileListWin = function(_metadata) {
 	var self = Ti.UI.createWindow({});
@@ -35,7 +34,7 @@ exports.createFileListWin = function(_metadata) {
 		minRowHeight: '44dp',
 		});
 	self.add(tv);
-	
+		
 	tv.addEventListener('click', function(e){
 		var popmenu = m_popmenu.createPopupMenu({
 			name: "filelist",

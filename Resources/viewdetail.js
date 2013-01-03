@@ -11,7 +11,7 @@ exports.setDropboxClient = function(_client) {
 
 exports.createDetailsWin = function(_path) {
 	var self = Ti.UI.createWindow({title: 'Details', backgroundColor:'#ffffff'});
-	var thumbsize = Dropbox.getThumbSize(Dropbox.DB_THUMB_MEDIUM);
+	var thumbsize = Dropbox.getThumbSize(Dropbox.DB_THUMB_LARGE);
 	var thumbview = Ti.UI.createImageView({top:10, left:10, height:thumbsize.height, width:thumbsize.width});
 	self.add(thumbview);
 	
@@ -20,7 +20,7 @@ exports.createDetailsWin = function(_path) {
 		top:10, left:10, height:thumbsize.height, width:thumbsize.width});
 	self.add(cancelBut);
 	cancelBut.addEventListener('click',function(e){
-		DBC.cancelThumbnailLoad({path:_path, size: Dropbox.DB_THUMB_MEDIUM});
+		DBC.cancelThumbnailLoad({path:_path, size: Dropbox.DB_THUMB_LARGE});
 	});
 	
 	DBC.addEventListener('loadedThumbnail', function(e){
@@ -28,6 +28,6 @@ exports.createDetailsWin = function(_path) {
 		thumbview.setImage(e.thumbnail.file);
 	});
 	
-	DBC.loadThumbnail({path:_path, size: Dropbox.DB_THUMB_MEDIUM});
+	DBC.loadThumbnail({path:_path, size: Dropbox.DB_THUMB_LARGE});
 	return self;
 }

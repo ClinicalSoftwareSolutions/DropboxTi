@@ -61,7 +61,7 @@ if(DBClient.isLinked) {
 	// I don't know why, but it seem account info needs to be called before
 	// any of the other network operations work.
 	// So if linked call this straight away
-    DBClient.loadAccountInfo();
+    DBClient.loadAccountInfo({dontFireLoaded: true});
 }
 
 var containingWin = Ti.UI.createWindow({});
@@ -92,8 +92,6 @@ tv.addEventListener('click',function(e){
 	var func = e.row.func;
 	switch(func) {
 		case 'link':
-				DBClient.link();
-				break;
 			if(DBClient.isLinked) {
 				Ti.API.info("Dropbox already linked. Userids: " + DBClient.userIds());
 				alert("Already linked");
@@ -200,6 +198,8 @@ function log(_msg) {
 DBClient.addEventListener('linked', function(e){
 	log("Dropbox linked now. Userids: " + e.userids);
 	alert("Dropbox now linked");
+	// Show the window when linked
+	DBClient.loadAccountInfo();
 });
 
 /*
@@ -208,15 +208,28 @@ DBClient.addEventListener('linked', function(e){
 DBClient.addEventListener('loadedAccountInfo', function(e){
 	require('var_dump').display(e);
 
-	log("*** ACCOUNT INFO ***");
-	log('country = '+e.country);
-	log('displayName = '+e.displayName);
-	log('userId = '+e.userId);
-	log('referralLink = '+e.referralLink);
-	log('Quota.normalBytes = '+e.quota.normalBytes);
-	log('Quota.sharedBytes = '+e.quota.sharedBytes);
-	log('Quota.totalConsumedBytes = '+e.quota.totalConsumedBytes);
-	log('Quota.totalBytes = '+e.quota.totalBytes);
+	var w = Ti.UI.createWindow({title: 'Account info', backgroundColor:'#ffffff', layout: 'vertical'});
+	var l;
+	l = Ti.UI.createLabel({text: 'displayName = '+e.displayName});
+	w.add(l);
+	l = Ti.UI.createLabel({text: 'userId = '+e.userId});
+	w.add(l);
+	l = Ti.UI.createLabel({text: 'country = '+e.country});
+	w.add(l);
+	l = Ti.UI.createLabel({text: 'referralLink = '+e.referralLink});
+	w.add(l);
+	l = Ti.UI.createLabel({text: 'Quota Details'});
+	w.add(l);
+	l = Ti.UI.createLabel({text: 'normalBytes = '+e.quota.normalBytes});
+	w.add(l);
+	l = Ti.UI.createLabel({text: 'sharedBytes = '+e.quota.sharedBytes});
+	w.add(l);
+	l = Ti.UI.createLabel({text: 'totalConsumedBytes = '+e.quota.totalConsumedBytes});
+	w.add(l);
+	l = Ti.UI.createLabel({text: 'totalBytes = '+e.quota.totalBytes});
+	w.add(l);
+	
+	nv.open(w);	
 });
 
 DBClient.addEventListener('loadAccountError', function(e){

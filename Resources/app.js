@@ -367,6 +367,11 @@ Ti.App.addEventListener('app:PopMenu_filelist',function(e){
 		case 'dl':
 			DBClient.loadFile({path: e.data.path});
 		break;
+		case 'openpath':
+			if (e.data.isDirectory) {
+				DBClient.loadMetadata({path: e.data.path});
+			}
+		break;
 		case 'detail':
 			log("Opening details window with path: "+e.data.path);
 			var w = require('/viewdetail').createDetailsWin(e.data.path);

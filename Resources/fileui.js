@@ -6,6 +6,7 @@ exports.path = "";
 
 var m_popmenu = require('popmenu');
 m_popmenu.addAction('Download File','dl');
+m_popmenu.addAction('Open path','openpath');
 m_popmenu.addAction('Show detail view','detail');
 m_popmenu.addAction('Get copy ref','copyref');
 m_popmenu.addAction('Get Share Link','share');
@@ -44,6 +45,7 @@ exports.createFileListWin = function(_metadata, _path) {
 			data: {
 				path: e.row.path,
 				filename: e.row.fn,
+				isDirectory: e.row.hasDetail,	// proxy for isDirectory
 			}
 		});
 		popmenu.open();		

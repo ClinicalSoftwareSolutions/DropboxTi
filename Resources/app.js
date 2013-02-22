@@ -29,7 +29,7 @@ Member									Location			Notes
  */
 
 //bootstrap and check dependencies
-if (Ti.version < 2.0 ) {
+if (Ti.version < 2.1 ) {
 	alert('Sorry - this application requires Titanium Mobile SDK 2.0 or later');	  	
 }
 

@@ -29,8 +29,8 @@ Member									Location			Notes
  */
 
 //bootstrap and check dependencies
-if (Ti.version < 2.1 ) {
-	alert('Sorry - this application requires Titanium Mobile SDK 2.0 or later');	  	
+if (Ti.version < 3.0 ) {
+	alert('Sorry - this application requires Titanium Mobile SDK 3.0 or later');	  	
 }
 
 // This is a single context application with multiple windows in a stack
@@ -64,10 +64,16 @@ if(DBClient.isLinked) {
     DBClient.loadAccountInfo({dontFireLoaded: true});
 }
 
-var containingWin = Ti.UI.createWindow({});
+//var containingWin = Ti.UI.createWindow({});
 var win = Ti.UI.createWindow({title: 'Dropbox Example App', backgroundColor: 'white', layout: 'vertical'});
-var nv = Ti.UI.iPhone.createNavigationGroup({window: win});
-containingWin.add(nv);
+//var nv = Ti.UI.iPhone.createNavigationGroup({window: win});
+var nv = Ti.UI.iOS.createNavigationWindow({ window: win });
+//containingWin.add(nv);
+
+// var win2 = Titanium.UI.createWindow({    backgroundColor: 'red', title: 'Red Window' });
+// var win1 = Titanium.UI.iOS.createNavigationWindow({ window: win2 });
+// var win3 = Titanium.UI.createWindow({ backgroundColor: 'blue', title: 'Blue Window' });
+// win1.open();
 
 var data = [];
 
@@ -441,6 +447,6 @@ Ti.App.addEventListener('app:PopMenu_filelist',function(e){
 /*
  * Open the window
  */
-containingWin.open();
+nv.open();
 
 })();

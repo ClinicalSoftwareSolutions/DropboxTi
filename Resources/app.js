@@ -80,6 +80,7 @@ data.push({title: 'Create Folder', func: 'mkdir'});
 data.push({title: 'Delete Path', func: 'rm'});
 data.push({title: 'Search', func: 'search'});
 data.push({title: 'Upload test file', func: 'upload'});
+data.push({title: 'Upload BIG (>150MB) file', func: 'uploadbig'});
 data.push({title: 'Upload known non-existent', func: 'uploadnon'});
 
 var tv = Ti.UI.createTableView({
@@ -175,6 +176,21 @@ tv.addEventListener('click',function(e){
 				file: file,
 				//parentRev: ''
 			});
+		break;
+		case 'uploadbig':
+			file = Ti.Filesystem.getFile(Ti.Filesystem.resourcesDirectory, "/BigFile");
+			if( !file.exists() ) {
+				alert("To test a big file upload please create a test file. "
+					+"You can use dd if=/dev/urandom of=./Resources/iphone/BigFile bs=160m count=1 to do this. "
+					+"NOTE you also need to build with --force-copy otherwise upload fails due to just a symlink");
+			}
+			else {
+				DBClient.uploadFile({
+					path: '/BigFileFromDropboxTi',
+					file: file,
+					//parentRev: ''
+				});
+			}
 		break;
 		case 'uploadnon':
 			file = Ti.Filesystem.getFile(Ti.Filesystem.resourcesDirectory, "/jfhdfjfdhfdhkfdhkfd.r5tg");
